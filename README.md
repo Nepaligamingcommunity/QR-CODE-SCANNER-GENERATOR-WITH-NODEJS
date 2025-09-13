@@ -62,6 +62,9 @@ Works fully in the browser with no extra software required
 
 > Experience the live application and see all features in action!
 
+## Node.js Download Link
+**[Download link](https://nodejs.org/dist/v22.19.0/node-v22.19.0-x64.msi)**
+
 ## ⚙️ Installation
 
 Follow these simple steps to get started:
