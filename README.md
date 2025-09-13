@@ -1,9 +1,8 @@
-Barcode Generator & Scanner
+#Barcode Generator & Scanner
 A comprehensive web application for generating and scanning various 1D and 2D barcode formats with a clean, responsive interface.
 
-Features
-🖨️ Barcode Generation
-1D Barcodes: Code 128, Code 39, EAN-13, EAN-8, UPC-A, Code 93, ITF-14, MSI, Pharmacode, Codabar
+#Features
+🖨️ Barcode Generation1D Barcodes: Code 128, Code 39, EAN-13, EAN-8, UPC-A, Code 93, ITF-14, MSI, Pharmacode, Codabar
 
 2D Barcodes: QR Code, Data Matrix, PDF417, Aztec Code
 
@@ -35,7 +34,7 @@ Installation
 Clone the repository
 
 bash
-git clone https://github.com/yourusername/barcode-generator-scanner.git
+git clone https://github.com/Nepaligamingcommunity/QR-CODE-SCANNER-GENERATOR-WITH-NODEJS.git
 cd barcode-generator-scanner
 Install dependencies
 
