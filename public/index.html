@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Generator & Scanner</title>
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="images/site.webmanifest">
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" type="text/css">
+    <style>
+        /* Styles for the help section tabs */
+        .help-tabs {
+            display: flex;
+            background: #f1f1f1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .help-tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .help-tab-button:hover {
+            background: #e0e0e0;
+        }
+        
+        .help-tab-button.active {
+            background: white;
+            color: #4b6cb7;
+        }
+        
+        .help-tab-content {
+            display: none;
+        }
+        
+        .help-tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .format-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .format-item {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+        
+        .format-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .format-item h4 {
+            color: #4b6cb7;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .format-item p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .example {
+            background: #eee;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border-left: 4px solid #4b6cb7;
+        }
+        
+        .correct {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        .incorrect {
+            color: #d32f2f;
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+        
+        .note {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        @media (max-width: 768px) {
+            .format-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .help-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-qrcode"></i> Barcode Generator & Scanner</h1>
+            <p>Generate and scan various barcode formats with ease</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="generator">
+                <i class="fas fa-plus-circle"></i> Generator
+            </button>
+            <button class="tab-btn" data-tab="scanner">
+                <i class="fas fa-search"></i> Scanner
+            </button>
+            <button class="tab-btn" data-tab="help">
+                <i class="fas fa-question-circle"></i> Help
+            </button>
+        </nav>
+
+        <!-- Generator Tab -->
+        <div id="generator" class="tab-content active">
+            <div class="generator-section">
+                <div class="input-group">
+                    <label for="barcodeType">Barcode Type:</label>
+                    <select id="barcodeType">
+                        <optgroup label="1D Barcodes">
+                            <option value="CODE128">Code 128</option>
+                            <option value="CODE39">Code 39</option>
+                            <option value="EAN13">EAN-13</option>
+                            <option value="EAN8">EAN-8</option>
+                            <option value="UPC">UPC-A</option>
+                            <option value="CODE93">Code 93</option>
+                            <option value="ITF14">ITF-14</option>
+                            <option value="MSI">MSI</option>
+                            <option value="pharmacode">Pharmacode</option>
+                            <option value="codabar">Codabar</option>
+                        </optgroup>
+                        <optgroup label="2D Barcodes">
+                            <option value="qrcode" selected>QR Code</option>
+                            <option value="datamatrix">Data Matrix</option>
+                            <option value="pdf417">PDF417</option>
+                            <option value="aztec">Aztec Code</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="barcodeData">Data to encode:</label>
+                    <textarea id="barcodeData" placeholder="Enter text or data to encode..." rows="3">Hello World!</textarea>
+                    <small class="input-hint">Enter the text or data you want to encode in the barcode</small>
+                </div>
+
+                <div class="options-grid">
+                    <div class="input-group">
+                        <label for="outputFormat">Output Format:</label>
+                        <select id="outputFormat">
+                            <option value="png">PNG</option>
+                            <option value="svg">SVG</option>
+                            <option value="jpeg">JPEG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="barcodeWidth">Width:</label>
+                        <input type="range" id="barcodeWidth" min="1" max="5" value="2" step="0.5">
+                        <span class="range-value">2</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="barcodeHeight">Height:</label>
+                        <input type="range" id="barcodeHeight" min="50" max="200" value="100" step="10">
+                        <span class="range-value">100</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="showText">Show Text:</label>
+                        <input type="checkbox" id="showText" checked>
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="btn btn-primary">
+                    <i class="fas fa-magic"></i> Generate Barcode
+                </button>
+
+                <div id="generatorResult" class="result-section" style="display: none;">
+                    <h3>Generated Barcode:</h3>
+                    <div class="barcode-preview" id="barcodePreview"></div>
+                    <div class="download-options">
+                        <button id="downloadBtn" class="btn btn-secondary">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scanner Tab -->
+        <div id="scanner" class="tab-content">
+            <div class="scanner-section">
+                <div class="upload-methods">
+                    <div class="upload-method">
+                        <h3><i class="fas fa-camera"></i> Camera Scan</h3>
+                        <button id="cameraBtn" class="btn btn-primary">
+                            <i class="fas fa-video"></i> Start Camera
+                        </button>
+                        <video id="cameraVideo" style="display: none;" autoplay></video>
+                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                    </div>
+
+                    <div class="upload-method">
+                        <h3><i class="fas fa-upload"></i> Upload Image</h3>
+                        <div class="file-upload">
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                            <button id="uploadBtn" class="btn btn-secondary">
+                                <i class="fas fa-folder-open"></i> Choose File
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="upload-method">
+                        <h3><i class="fas fa-hand-paper"></i> Drag & Drop</h3>
+                        <div id="dropZone" class="drop-zone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag and drop an image here</p>
+                            <small>Supports: JPG, PNG, GIF, BMP, WebP</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="scannerResult" class="result-section" style="display: none;">
+                    <h3>Scan Result:</h3>
+                    <div id="scanResult"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Tab -->
+        <div id="help" class="tab-content">
+            <div class="help-section">
+                <h2>Barcode Format Reference</h2>
+                <p class="subtitle">Complete guide to supported barcode formats with correct usage examples</p>
+                
+                <div class="help-tabs">
+                    <button class="help-tab-button active" data-helptab="format-guide">Format Guide</button>
+                    <button class="help-tab-button" data-helptab="examples">Correct Examples</button>
+                    <button class="help-tab-button" data-helptab="tips">Usage Tips</button>
+                </div>
+                
+                <div id="format-guide" class="help-tab-content active">
+                    <div class="note">
+                        <p><strong>Note:</strong> Different barcode formats have specific requirements for valid characters and length. Using incorrect formats may result in unscannable barcodes.</p>
+                    </div>
+                    
+                    <div class="format-category">
+                        <h3><i class="fas fa-bars"></i> 1D Barcodes (Linear)</h3>
+                        <div class="format-grid">
+                            <div class="format-item">
+                                <h4>Code 128</h4>
+                                <p>High-density linear barcode supporting all ASCII characters</p>
+                                <div class="example">
+                                    <span class="correct">"Hello World!"</span> - Good example
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>Code 39</h4>
+                                <p>Alphanumeric barcode widely used in automotive and defense</p>
+                                <div class="example">
+                                    <span class="correct">"HELLO123"</span> - Good example<br>
+                                    <span class="incorrect">"hello123"</span> - No lowercase
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>EAN-13</h4>
+                                <p>European Article Number for retail products</p>
+                                <div class="example">
+                                    <span class="correct">"5901234123457"</span> - Valid EAN-13<br>
+                                    <span class="incorrect">"1234567890123"</span> - Invalid check digit
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>UPC-A</h4>
+                                <p>Universal Product Code used in North America</p>
+                                <div class="example">
+                                    <span class="correct">"123456789012"</span> - Valid UPC-A<br>
+                                    <span class="incorrect">"12345678901"</span> - Too short
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>Code 93</h4>
+                                <p>Compact alphanumeric barcode with high data density</p>
+                                <div class="example">
+                                    <span class="correct">"HELLO123"</span> - Good example
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>ITF-14</h4>
+                                <p>Interleaved 2 of 5 for packaging and shipping</p>
+                                <div class="example">
+                                    <span class="correct">"12345678901234"</span> - Valid ITF-14<br>
+                                    <span class="incorrect">"1234567890"</span> - Too short
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="format-category">
+                        <h3><i class="fas fa-th"></i> 2D Barcodes (Matrix)</h3>
+                        <div class="format-grid">
+                            <div class="format-item">
+                                <h4>QR Code</h4>
+                                <p>Quick Response code with high data capacity and error correction</p>
+                                <div class="example">
+                                    <span class="correct">"https://example.com"</span> - Good example
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>Data Matrix</h4>
+                                <p>2D matrix barcode for small items and direct part marking</p>
+                                <div class="example">
+                                    <span class="correct">"Product-12345"</span> - Good example
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>PDF417</h4>
+                                <p>Portable Data File format for high-capacity applications</p>
+                                <div class="example">
+                                    <span class="correct">"PDF417 Sample Data"</span> - Good example
+                                </div>
+                            </div>
+                            <div class="format-item">
+                                <h4>Aztec Code</h4>
+                                <p>2D matrix barcode with built-in error correction</p>
+                                <div class="example">
+                                    <span class="correct">"Aztec Code Sample"</span> - Good example
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="examples" class="help-tab-content">
+                    <h2>Correct Barcode Examples</h2>
+                    
+                    <div class="note">
+                        <p>These examples demonstrate the proper format for each barcode type. Always validate your data against the specific requirements of each barcode format.</p>
+                    </div>
+                    
+                    <div class="format-grid">
+                        <div class="format-item">
+                            <h4>Code 128</h4>
+                            <div class="example">
+                                <strong>Correct:</strong> "Hello World!"<br>
+                                <strong>Also valid:</strong> "ABC123def!@#"<br>
+                                <strong>Length:</strong> Variable
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <h4>Code 39</h4>
+                            <div class="example">
+                                <strong>Correct:</strong> "HELLO123"<br>
+                                <strong>Also valid:</strong> "ABC-123"<br>
+                                <strong>Invalid:</strong> "hello" (lowercase)
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <h4>EAN-13</h4>
+                            <div class="example">
+                                <strong>Correct:</strong> "5901234123457"<br>
+                                <strong>Format:</strong> 13 digits with valid check digit<br>
+                                <strong>Invalid:</strong> "1234567890123" (invalid check digit)
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <h4>UPC-A</h4>
+                            <div class="example">
+                                <strong>Correct:</strong> "123456789012"<br>
+                                <strong>Format:</strong> 12 digits with valid check digit<br>
+                                <strong>Invalid:</strong> "12345678901" (too short)
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <h4>QR Code</h4>
+                            <div class="example">
+                                <strong>Correct:</strong> "https://example.com"<br>
+                                <strong>Also valid:</strong> "SMSTO:123456:Hello"<br>
+                                <strong>Capacity:</strong> Up to 4,296 alphanumeric chars
+                            </div>
+                        </div>
+                        <div class="format-item">
+                            <h4>Data Matrix</h4>
+                            <div class="example">
+                                <strong>Correct:</strong> "Product-12345"<br>
+                                <strong>Capacity:</strong> Up to 2,335 alphanumeric chars<br>
+                                <strong>Use Case:</strong> Small item marking
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tips" class="help-tab-content">
+                    <h2>Barcode Usage Tips</h2>
+                    
+                    <div class="format-grid">
+                        <div class="format-item">
+                            <h4><i class="fas fa-lightbulb"></i> General Guidelines</h4>
+                            <ul>
+                                <li>Always validate data against format specifications</li>
+                                <li>Include check digits where required</li>
+                                <li>Test barcodes with actual scanners</li>
+                                <li>Ensure proper quiet zones around barcodes</li>
+                            </ul>
+                        </div>
+                        <div class="format-item">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Mistakes</h4>
+                            <ul>
+                                <li>Using incorrect character sets</li>
+                                <li>Wrong length (too short or too long)</li>
+                                <li>Missing or incorrect check digits</li>
+                                <li>Inadequate contrast or quiet zones</li>
+                            </ul>
+                        </div>
+                        <div class="format-item">
+                            <h4><i class="fas fa-check-circle"></i> Validation</h4>
+                            <ul>
+                                <li>Use validation libraries when generating programmatically</li>
+                                <li>Verify check digit calculations</li>
+                                <li>Test with multiple scanner devices</li>
+                                <li>Check printing quality and size requirements</li>
+                            </ul>
+                        </div>
+                        <div class="format-item">
+                            <h4><i class="fas fa-industry"></i> Industry Standards</h4>
+                            <ul>
+                                <li>Retail: EAN-13, UPC-A</li>
+                                <li>Logistics: Code 128, ITF-14</li>
+                                <li>Healthcare: Code 128, Data Matrix</li>
+                                <li>General: QR Code, Code 39</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="note">
+                        <p><strong>Remember:</strong> Always consult the official specifications for critical applications. Different industries may have specific requirements for barcode formats and data content.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Help tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const helpTabButtons = document.querySelectorAll('.help-tab-button');
+            
+            helpTabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-helptab');
+                    
+                    // Remove active class from all buttons and content
+                    document.querySelectorAll('.help-tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    document.querySelectorAll('.help-tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Add active class to current button and content
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "barcode-generator-scanner",
+  "version": "1.0.0",
+  "description": "Comprehensive web-based barcode generator and scanner application",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "barcode",
+    "generator",
+    "scanner",
+    "qr-code",
+    "web-app"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.80",
+    "bwip-js": "^4.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jimp": "^0.22.10",
+    "jsbarcode": "^3.12.1",
+    "jsqr": "^1.4.0",
+    "multer": "^2.0.2",
+    "qrcode": "^1.5.4",
+    "serve-favicon": "^2.5.1",
+    "xmldom": "^0.6.0"
+  }
+}
