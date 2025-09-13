@@ -77,7 +77,7 @@ cd qr-code-scanner-generator-with-nodejs
 npm install
 
 # Start the development server
-npm run dev
+node server.js
 ```
 
 ## 🤝 Contributing
