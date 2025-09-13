@@ -68,7 +68,7 @@ Follow these simple steps to get started:
 
 ```bash
 # Clone the repository
-git clone https://github.com/Nepaligamingcommunity/QR-CODE-SCANNER-GENERATOR-WITH-NODEJS
+git clone https://github.com/Nepaligamingcommunity/QR-CODE-SCANNER-GENERATOR-WITH-NODEJS.git
 
 # Navigate to the project directory
 cd qr-code-scanner-generator-with-nodejs
