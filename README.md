@@ -21,12 +21,13 @@ This project is for developers, small businesses, students, and hobbyists who ne
 
 ## ✨ Features
 
-- Generate 1D & 2D barcodes (QR Code
+- Generate 1D & 2D barcodes 
+- QR Code
 - Code128
 - EAN
 - PDF417
 - DataMatrix
-- etc.)
+
 
 Scan barcodes live using the device camera
 
