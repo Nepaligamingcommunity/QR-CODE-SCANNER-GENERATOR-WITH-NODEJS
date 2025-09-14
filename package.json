@@ -19,15 +19,19 @@
   "license": "MIT",
   "dependencies": {
     "@napi-rs/canvas": "^0.1.80",
+    "@zxing/library": "^0.21.3",
     "bwip-js": "^4.7.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "jimp": "^0.22.10",
+    "jimp": "^0.22.12",
     "jsbarcode": "^3.12.1",
     "jsqr": "^1.4.0",
     "multer": "^2.0.2",
     "qrcode": "^1.5.4",
+    "quagga": "^0.12.1",
     "serve-favicon": "^2.5.1",
-    "xmldom": "^0.6.0"
-  }
+    "xmldom": "^0.6.0",
+    "zxing-wasm": "^2.2.1"
+  },
+  "devDependencies": {}
 }
