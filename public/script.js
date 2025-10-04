@@ -361,12 +361,25 @@ class BarcodeApp {
         if (result.success) {
             scanResult.innerHTML = `
                 <div class="scan-result">
-                    <h4><i class="fas fa-check-circle"></i> Barcode Detected!</h4>
-                    <p><strong>Type:</strong> ${result.type}</p>
-                    <p><strong>Data:</strong> ${result.data}</p>
-                    ${result.location ? `<p><strong>Location:</strong> Found in image</p>` : ''}
-                    ${result.note ? `<p><em>${result.note}</em></p>` : ''}
-                </div>
+    <h4><i class="fas fa-check-circle"></i> Barcode Detected!</h4>
+    <p><strong>Type:</strong> ${result.type}</p>
+    <p>
+        <strong>Data:</strong> 
+       <span id="barcode-data-${result.id}">
+            ${
+                /^(https?:\/\/[^\s]+)$/.test(result.data)
+                ? `<a href="${result.data}" target="_blank" style="color: black; text-decoration: underline;">${result.data}</a>`
+                : `<span style="color: black;">${result.data}</span>`
+            }
+        </span>
+        <i class="fas fa-copy" style="cursor:pointer; margin-left:5px;"
+   onclick="navigator.clipboard.writeText('${result.data.replace(/'/g, "\\'")}')"></i>
+
+    </p>
+    ${result.location ? `<p><strong>Location:</strong> Found in image</p>` : ''}
+    ${result.note ? `<p><em>${result.note}</em></p>` : ''}
+</div>
+
             `;
         } else {
             scanResult.innerHTML = `
