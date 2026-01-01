@@ -9,40 +9,28 @@
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
-    <link rel="manifest" href="images/site.webmanifest">
-
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css" type="text/css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href ="help-style.css" type="text/css">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1><i class="fas fa-qrcode"></i> Barcode Generator & Scanner</h1>
-            <p>Generate and scan various barcode formats with ease</p>
+            <h1><i class="fas fa-barcode"></i> Barcode Pro</h1>
+            <p>Dynamic Generation & Real-time Scanning</p>
         </header>
 
         <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="generator">
-                <i class="fas fa-plus-circle"></i> Generator
-            </button>
-            <button class="tab-btn" data-tab="scanner">
-                <i class="fas fa-search"></i> Scanner
-            </button>
-            <button class="tab-btn" data-tab="help">
-                <i class="fas fa-question-circle"></i> Help
-            </button>
+            <button class="tab-btn active" data-tab="generator"><i class="fas fa-magic"></i> Generator</button>
+            <button class="tab-btn" data-tab="scanner"><i class="fas fa-camera"></i> Scanner</button>
+            <button class="tab-btn" data-tab="help"><i class="fas fa-question-circle"></i> Help Guide</button>
         </nav>
 
         <!-- Generator Tab -->
         <div id="generator" class="tab-content active">
-            <div class="generator-section">
-                <div class="input-group">
-                    <label for="barcodeType">Barcode Type:</label>
-                    <select id="barcodeType">
+            <div class="input-group">
+                <label>Barcode Format</label>
+                 <select id="barcodeType">
                         <optgroup label="1D Barcodes">
                             <option value="CODE128">Code 128</option>
                             <option value="CODE39">Code 39</option>
@@ -62,108 +50,102 @@
                             <option value="aztec">Aztec Code</option>
                         </optgroup>
                     </select>
-                </div>
+            </div>
 
+            <div class="input-group">
+                <label>Content to Encode</label>
+                <textarea id="barcodeData" rows="3">https://example.com</textarea>
+            </div>
+
+            <div class="options-grid">
+                <div class="input-group qr-only">
+                    <label>Dot Style</label>
+                    <select id="dotStyle">
+                        <option value="square">Square</option>
+                        <option value="rounded">Rounded</option>
+                    </select>
+                </div>
                 <div class="input-group">
-                    <label for="barcodeData">Data to encode:</label>
-                    <textarea id="barcodeData" placeholder="Enter text or data to encode..." rows="3">Hello World!</textarea>
-                    <small class="input-hint">Enter the text or data you want to encode in the barcode</small>
+                    <label>Foreground Color</label>
+                    <input type="color" id="foregroundColor" value="#000000">
                 </div>
-
-                <div class="options-grid">
-                    <div class="input-group">
-                        <label for="outputFormat">Output Format:</label>
-                        <select id="outputFormat">
+                <div class="input-group qr-only">
+                    <label>Eye Color</label>
+                    <input type="color" id="eyeColor" value="#000000">
+                </div>
+                <div class="input-group">
+                    <label>Width <span class="range-value" id="widthValue">2</span></label>
+                    <input type="range" id="barcodeWidth" min="1" max="5" step="0.5" value="2">
+                </div>
+                <div class="input-group">
+                    <label>Height <span class="range-value" id="heightValue">100</span></label>
+                    <input type="range" id="barcodeHeight" min="50" max="200" step="10" value="100">
+                </div>
+                <div class="input-group">
+                    <label>Output Format</label>
+                    <select id="outputFormat">
                             <option value="png">PNG</option>
                             <option value="svg">SVG</option>
                             <option value="jpeg">JPEG</option>
                             <option value="webp">WebP</option>
                         </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="barcodeWidth">Width:</label>
-                        <input type="range" id="barcodeWidth" min="1" max="5" value="2" step="0.5">
-                        <span class="range-value">2</span>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="barcodeHeight">Height:</label>
-                        <input type="range" id="barcodeHeight" min="50" max="200" value="100" step="10">
-                        <span class="range-value">100</span>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="showText">Show Text:</label>
+                </div>
+                <div class="input-group">
+                    <label style="display: flex; align-items: center; gap: 8px;">
                         <input type="checkbox" id="showText" checked>
-                    </div>
+                        Show Text Below Barcode
+                    </label>
                 </div>
+            </div>
 
-                <button id="generateBtn" class="btn btn-primary">
-                    <i class="fas fa-magic"></i> Generate Barcode
-                </button>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button id="generateBtn" class="btn"><i class="fas fa-magic"></i> Generate</button>
+                <button id="downloadBtn" class="btn btn-secondary" style="display: none;"><i class="fas fa-download"></i> Download</button>
+            </div>
 
-                <div id="generatorResult" class="result-section" style="display: none;">
-                    <h3>Generated Barcode:</h3>
-                    <div class="barcode-preview" id="barcodePreview"></div>
-                    <div class="download-options">
-                        <button id="downloadBtn" class="btn btn-secondary">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                    </div>
-                </div>
+            <div id="generatorResult" class="result-section" style="display: none;">
+                <h3>Preview</h3>
+                <div id="barcodePreview" style="text-align: center; padding: 20px; background: white; border-radius: 10px;"></div>
             </div>
         </div>
 
         <!-- Scanner Tab -->
         <div id="scanner" class="tab-content">
-            <div class="scanner-section">
-                <div class="upload-methods">
-                    <div class="upload-method">
-                        <h3><i class="fas fa-camera"></i> Camera Scan</h3>
-                        <button id="cameraBtn" class="btn btn-primary">
-                            <i class="fas fa-video"></i> Start Camera
+            <div class="upload-methods">
+                <div class="upload-method">
+                    <h3><i class="fas fa-camera"></i> Use Camera</h3>
+                    <button id="cameraBtn" class="btn"><i class="fas fa-video"></i> Start Camera</button>
+                    <div id="cameraControls" class="camera-controls">
+                        <select id="cameraSelect"></select>
+                        <button id="switchCameraBtn" class="btn btn-secondary"><i class="fas fa-sync-alt"></i> Switch</button>
+                    </div>
+                    <video id="cameraVideo" autoplay playsinline></video>
+                    <canvas id="cameraCanvas"></canvas>
+                </div>
+
+                <div class="upload-method">
+                    <h3><i class="fas fa-upload"></i> Upload Image</h3>
+                    <div class="file-upload">
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        <button id="uploadBtn" class="btn btn-secondary">
+                            <i class="fas fa-folder-open"></i> Choose File
                         </button>
-                        
-                        <div class="camera-controls" id="cameraControls" style="display: none;">
-                            <select id="cameraSelect" class="camera-select">
-                                <option value="">Select Camera...</option>
-                            </select>
-                            <button id="switchCameraBtn" class="camera-switch-btn">
-                                <i class="fas fa-sync-alt"></i> Switch Camera
-                            </button>
-                        </div>
-                        
-                        <div class="camera-preview">
-                            <video id="cameraVideo" style="display: none;" autoplay playsinline></video>
-                            <canvas id="cameraCanvas" style="display: none;"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="upload-method">
-                        <h3><i class="fas fa-upload"></i> Upload Image</h3>
-                        <div class="file-upload">
-                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                            <button id="uploadBtn" class="btn btn-secondary">
-                                <i class="fas fa-folder-open"></i> Choose File
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="upload-method">
-                        <h3><i class="fas fa-hand-paper"></i> Drag & Drop</h3>
-                        <div id="dropZone" class="drop-zone">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Drag and drop an image here</p>
-                            <small>Supports: JPG, PNG, GIF, BMP, WebP</small>
-                        </div>
                     </div>
                 </div>
 
-                <div id="scannerResult" class="result-section" style="display: none;">
-                    <h3>Scan Result:</h3>
-                    <div id="scanResult"></div>
+                <div class="upload-method">
+                    <h3><i class="fas fa-hand-paper"></i> Drag & Drop</h3>
+                    <div id="dropZone" class="drop-zone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag and drop an image here</p>
+                        <small>Supports: JPG, PNG, GIF, BMP, WebP</small>
+                    </div>
                 </div>
+            </div>
+
+            <div id="scannerResult" class="result-section" style="display: none;">
+                <h3>Scan Result:</h3>
+                <div id="scanResult"></div>
             </div>
         </div>
 
@@ -386,6 +368,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="help-script.js"></script>
 </body>
 </html>
