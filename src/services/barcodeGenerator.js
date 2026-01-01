@@ -1,6 +1,6 @@
 import JsBarcode from 'jsbarcode';
 import QRCode from 'qrcode';
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, loadImage } from '@napi-rs/canvas';
 import bwipjs from 'bwip-js';
 import { DOMImplementation, XMLSerializer } from 'xmldom';
 
@@ -11,12 +11,13 @@ export async function generateBarcode(type, data, format = 'png', options = {}) 
       height: 100,
       displayValue: true,
       fontSize: 20,
-      margin: 10,
-      ...options
+      margin: 2,
+      dotStyle: 'square', // Default value
+      ...options // This will override defaults with user options
     };
 
     if (type === 'qrcode') {
-      return await generateQRCode(data, format, defaultOptions);
+      return await generateAdvancedQRCode(data, format, defaultOptions);
     } else if (['datamatrix', 'pdf417', 'aztec'].includes(type)) {
       return await generate2DBarcode(type, data, format, defaultOptions);
     } else {
@@ -27,29 +28,90 @@ export async function generateBarcode(type, data, format = 'png', options = {}) 
   }
 }
 
-async function generateQRCode(data, format, options) {
-  const qrOptions = {
-    errorCorrectionLevel: options.errorCorrectionLevel || 'M',
-    margin: options.margin || 1,
-    color: {
-      dark: options.foreground || '#000000',
-      light: options.background || '#FFFFFF'
-    },
-    width: options.size || 256
+async function generateAdvancedQRCode(data, format, options) {
+  const {
+    size = 512,
+    foreground = '#000000',
+    background = '#FFFFFF',
+    eyeColor = null,
+    logoPath = null,
+    dotStyle = 'square', // Use the value from options
+    margin = 2
+  } = options;
+
+  // 1. Create the QR Matrix
+  const qr = QRCode.create(data, { errorCorrectionLevel: 'H' });
+  const modules = qr.modules;
+  const count = modules.size;
+  const cellSize = size / (count + margin * 2);
+  const offset = margin * cellSize;
+
+  const canvas = createCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+
+  // 2. Draw Background
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, size, size);
+
+  // Helper to identify Finder Patterns (The 3 large corner squares)
+  const isEye = (row, col) => {
+    if (row < 7 && col < 7) return true; // Top-left
+    if (row < 7 && col >= count - 7) return true; // Top-right
+    if (row >= count - 7 && col < 7) return true; // Bottom-left
+    return false;
   };
 
-  if (format === 'svg') {
-    const svgString = await QRCode.toString(data, { ...qrOptions, type: 'svg' });
-    return { success: true, data: svgString, format: 'svg', type: 'qrcode' };
+  // 3. Draw Modules
+  for (let row = 0; row < count; row++) {
+    for (let col = 0; col < count; col++) {
+      if (modules.get(row, col)) {
+        const x = col * cellSize + offset;
+        const y = row * cellSize + offset;
+
+        if (isEye(row, col) && eyeColor) {
+          ctx.fillStyle = eyeColor;
+        } else {
+          ctx.fillStyle = foreground;
+        }
+
+        if (dotStyle === 'rounded' && !isEye(row, col)) {
+          // Draw circular dots for data
+          ctx.beginPath();
+          ctx.arc(x + cellSize / 2, y + cellSize / 2, cellSize / 2.4, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Draw squares for eyes or if square style is selected
+          ctx.fillRect(x, y, cellSize, cellSize);
+        }
+      }
+    }
+  }
+
+  // 4. Add Logo Overlay
+  if (logoPath) {
+    try {
+      const logo = await loadImage(logoPath);
+      const logoSize = size * 0.2; // 20% of QR size
+      const center = (size - logoSize) / 2;
+
+      // Clean area behind logo
+      ctx.fillStyle = background;
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, (logoSize / 2) + 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.drawImage(logo, center, center, logoSize, logoSize);
+    } catch (e) {
+      console.warn("Logo overlay failed:", e.message);
+    }
   }
 
   const mimeType = mapFormatToMime(format);
-  const buffer = await QRCode.toBuffer(data, { ...qrOptions, type: mimeType });
-  const base64 = buffer.toString('base64');
+  const buffer = canvas.toBuffer(mimeType);
 
   return {
     success: true,
-    data: `data:${mimeType};base64,${base64}`,
+    data: `data:${mimeType};base64,${buffer.toString('base64')}`,
     format,
     type: 'qrcode'
   };
@@ -104,7 +166,7 @@ async function generate2DBarcode(type, data, format, options) {
     const bwipOptions = {
       bcid: bwipType,
       text: data,
-      width: options.width * 10 || 20, // Scale width appropriately
+      width: options.width * 10 || 20,
       height: options.height || 100,
       includetext: options.displayValue || false,
       textsize: options.fontSize || 10,
@@ -125,7 +187,6 @@ async function generate2DBarcode(type, data, format, options) {
       type
     };
   } catch (error) {
-    // Fallback to simulated barcode if bwip-js fails
     console.warn(`Failed to generate ${type} with bwip-js: ${error.message}. Using fallback.`);
     return generate2DBarcodeFallback(type, data, format, options);
   }
@@ -135,15 +196,12 @@ function generate2DBarcodeFallback(type, data, format, options) {
   const canvas = createCanvas(200, 200);
   const ctx = canvas.getContext('2d');
 
-  // Draw background
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(0, 0, 200, 200);
   
-  // Draw barcode placeholder
   ctx.fillStyle = '#000000';
   ctx.fillRect(20, 20, 160, 160);
   
-  // Draw text
   ctx.fillStyle = '#FF0000';
   ctx.font = '12px Arial';
   ctx.textAlign = 'center';
@@ -178,6 +236,6 @@ function mapFormatToMime(format) {
     case 'svg':
       return 'image/svg+xml';
     default:
-      return 'image/png'; // fallback
+      return 'image/png';
   }
 }
